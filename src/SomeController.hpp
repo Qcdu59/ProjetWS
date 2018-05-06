@@ -1,51 +1,96 @@
- #ifndef SOMECONTROLLER_HPP
- #define SOMECONTROLLER_HPP
-     
- #include <cppcms/application.h>
- #include <cppcms/http_response.h>
- #include <cppcms/url_dispatcher.h>
+#ifndef SOMECONTROLLER_HPP
+#define SOMECONTROLLER_HPP
+
+#include <cppcms/application.h>
+#include <cppcms/http_response.h>
+#include <cppcms/url_dispatcher.h>
+#include <mysql/mysql.h>
+#include <cstdio>
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
   
  class SomeController : public cppcms::application {
      public:
          SomeController(cppcms::service &srv) : cppcms::application(srv) {
-             dispatcher().assign("/hello",&SomeController::hello,this);
-             dispatcher().assign("/bye",&SomeController::bye,this);
-	     dispatcher().assign("/thegame",&SomeController::thegame,this);
-             dispatcher().assign(".*",&SomeController::redirect,this);
+	   dispatcher().assign("/hello",&SomeController::hello,this);
+	   dispatcher().assign("/users",&SomeController::getAll,this);
+	   dispatcher().assign("/bye",&SomeController::bye,this);
+	   dispatcher().assign("/thegame",&SomeController::thegame,this);
+	   dispatcher().assign(".*",&SomeController::redirect,this);
          }
-     
-         void redirect() {
-             response().set_redirect_header("/hello");
-         }
-     
-         void hello() {
-             response().out() <<
-                 "<html>"
-                 "<body>"
-                 " <h1>Hello World</h1>"
-                 "</body>"
-                 "</html>\n";
-     
-         }
-     
-         void bye() {
-             response().out() <<
-                 "<html>"
-                 "<body>"
-                 " <h1>Bye</h1>"
-                 "</body>"
-                 "</html>\n";
-         }
+   
+   void redirect() {
+     response().set_redirect_header("/hello");
+   }
 
+   void getAll(){
+     MYSQL mysql;
+     mysql_init(&mysql);
+     mysql_options(&mysql,MYSQL_READ_DEFAULT_GROUP,"option");
+
+     if(mysql_real_connect(&mysql, "localhost", "root", "toto", "test", 0, NULL, 0)){
+       mysql_query(&mysql, "SELECT * FROM users");
+       MYSQL_RES *result = NULL;
+       MYSQL_ROW row;
+
+       unsigned int i = 0;
+       unsigned int num_champs = 0;
+       string toto = "";
+
+       result = mysql_use_result(&mysql);
+       num_champs = mysql_num_fields(result);
+
+       while ((row = mysql_fetch_row(result))){
+	 unsigned long *lengths;
+	 lengths = mysql_fetch_lengths(result);
+	 for(i = 0; i < num_champs; i++) {
+	   printf("%.*s ", (int) lengths[i], row[i] ? row[i] : "NULL");
+	   toto += " ";
+	   toto += (string) row[i];
+	 }
+	 printf("\n");
+       }
+
+       if(result != NULL)
+      	 response().out() << toto;
+       mysql_free_result(result);
+       mysql_close(&mysql);
+     } else {
+       cout << "Une erreur s'est produite lors de la connexion à la BDD!" << endl;
+     }
+   }
+   
+   void hello() {
+     response().out() <<
+       "<html>"
+       "<body>"
+       " <h1>Hello World</h1>"
+       "</body>"
+       "</html>\n";
+     
+   }
+   
+   void bye() {
+     response().out() <<
+       "<html>"
+       "<body>"
+       " <h1>Bye</h1>"
+       "</body>"
+       "</html>\n";
+   }
+   
    void thegame() {
      response().out() <<
-                 "<html>"
-                 "<body>"
-                 " <h1>The Game</h1>"
-                 "</body>"
-                 "</html>\n";
+       "<html>"
+       "<body>"
+       " <h1>The Game</h1>"
+       "</body>"
+       "</html>\n";
    }
  };
-     
+
  #endif
 

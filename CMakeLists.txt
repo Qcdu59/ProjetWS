@@ -16,5 +16,11 @@ include_directories(${INC_BOOSTER})
 find_library(LIB_CPPCMS cppcms)
 find_path(INC_CPPCMS cppcms/config.h)
 include_directories(${INC_CPPCMS})
+
+# Add MySQL
+# find_package(MySQL REQUIRED)
+include_directories(include)
+set(CMAKE_LIBRARY_PATH /lib)
+set(LIBS ${LIBS} mysql)
  
 add_subdirectory(src)
