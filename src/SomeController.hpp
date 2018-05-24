@@ -17,8 +17,6 @@ using namespace std;
          SomeController(cppcms::service &srv) : cppcms::application(srv) {
 	   dispatcher().assign("/hello",&SomeController::hello,this);
 	   dispatcher().assign("/users",&SomeController::getAll,this);
-	   dispatcher().assign("/bye",&SomeController::bye,this);
-	   dispatcher().assign("/thegame",&SomeController::thegame,this);
 	   dispatcher().assign(".*",&SomeController::redirect,this);
          }
    
@@ -73,23 +71,6 @@ using namespace std;
      
    }
    
-   void bye() {
-     response().out() <<
-       "<html>"
-       "<body>"
-       " <h1>Bye</h1>"
-       "</body>"
-       "</html>\n";
-   }
-   
-   void thegame() {
-     response().out() <<
-       "<html>"
-       "<body>"
-       " <h1>The Game</h1>"
-       "</body>"
-       "</html>\n";
-   }
  };
 
  #endif

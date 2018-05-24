@@ -1,6 +1,0 @@
-mkdir build
-cd build/
-cmake .. && make
-./hello_world -c ../config.js
-
-http://127.0.0.1:8080/

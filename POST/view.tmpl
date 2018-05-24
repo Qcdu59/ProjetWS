@@ -1,0 +1,20 @@
+<% c++ #include "content.h" %>
+<% skin view %>
+<% view message uses content::message %>
+<% template render() %>
+<html>
+    <body>
+    <% if not empty name %>
+	    <h1>Hello <%= forename %> <%= name %> </h1>
+	    <p>Detail du compte : pseudo : <%= pseudo %>, mot de passe : <%= password %></p>
+    <% else %>
+    	<h1>Création de compte</h1>
+    <% end %>
+    <form method="post" action="" >
+    <% form as_p info %>
+    </form>
+  </body>
+<html>
+<% end template %>
+<% end view %>
+<% end skin %>
